@@ -22,7 +22,7 @@ app.post('/addProduct',(req,res)=>{
   console.log(product);
   productCollection.insertOne(product)
   .then(result=> console.log("One New product Added"))
-  res.send("Product Send on Database Successfully");
+  res.redirect("/");
 
 
 })
@@ -47,19 +47,33 @@ app.post('/addProduct',(req,res)=>{
         res.send(documents);
       }) 
   })
+  ///Get a single product from database
 app.get('/product/:id',(req,res)=>{
   productCollection.find({_id:ObjectId(req.params.id)})
   .toArray((err,document)=>{
-    res.send(document[0]);
-    console.log(document);
+    res.send(document[0])
+    
   })
  
-
 })
+///Update Information
+app.patch('/update/:id',(req,res)=>{
+productCollection.updateOne(
+  {_id:ObjectId(req.params.id)},
+  { $set:{price:req.body.price,brand:req.body.brand}
+})
+.then(result=>{
+  res.send(result.modifiedCount>0)
+})
+})
+
+
 
   app.delete('/delete/:id',(req,res)=>{
     productCollection.deleteOne({_id:ObjectId(req.params.id)})
-    .then((result)=>{console.log(result);})
+    .then((result)=>{
+      res.send(result.deletedCount>0);
+    })
 
   })
  
