@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>I Have a Mongo Database</h1>
+  <form action="addProduct"  method="post">
+    Name: <input type="text" placeholder="product" name="name">
+    Price: <input type="text" placeholder="price" name="price">
+    Brand: <input type="text" placeholder="Brand" name="brand">
+    <button type="submit">Add Product</button>
+
+  </form>
+
+   <div id="product"></div>
+   <div id="update"></div>
+
+  <script>
+ function loadAllProduct(){
+
+  fetch('/products')
+    .then(res=>res.json())
+    .then(products=>{
+      console.log(products);
+     const container= document.getElementById('product');
+        products.forEach(product => {
+          const p=document.createElement('p');
+          p.innerHTML=`<strong> Product:- </strong> ${product.name}, Brand: ${product.brand}, price : ${product.price}
+          <button onclick="loadProduct('${product._id}')" >Update</button>
+          <button onclick="deleteProduct('${product._id}')">Delete</button>`;
+          container.appendChild(p);
+        });
+    })
+ }
+ loadAllProduct();
+
+
+ ///For Delete Product 
+  function deleteProduct(id){
+   fetch(`/delete/${id}`,{method:"DELETE"})
+    .then(res=>res.json())
+    .then(result=>{
+      console.log("Message Deleted Successfully");
+    })
+
+ }
+//Load all product
+
+ function loadProduct(id){
+  fetch(`/product/${id}`)
+    .then(res=>res.json())
+    .then(data=>{
+     const update=document.getElementById('update');
+     update.innerHTML=`<h3>Update :${data.name} Information</h3>
+     <form action="addProduct" method="post">
+      Name: <input type="text" value=${data.name} name="name">
+     Pice: <input type="text" value=${data.price} name="price"> 
+     Brand: <input type="text" value=${data.brand} name="brand"> 
+         <button type="submit">Update Information</button>
+     </form>
+     `
+
+
+    })}
+
+
+  </script>
+</body>
+</html>
